@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Shopify Products</h2>
+@if (ViewBag.Products == null || ViewBag.Products.Count == 0)
+{
+<p>There are no blogs yet.</p>
+} else {
+<table>
+    <thead>
+        <tr>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+            <th>Title</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var blog in ViewBag.Products)
+        {
+        <tr> 
+            <td>@blog.title</td>
+        </tr>
+        }
+    </tbody>
+</table>
+}
+ 

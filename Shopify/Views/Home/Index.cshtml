@@ -1,0 +1,527 @@
+@{
+    ViewBag.Title = "Index";
+}
+
+<link rel="stylesheet" href="~/Content/kendo.common.min.css" />
+<link rel="stylesheet" href="~/Content/kendo.default.min.css" />
+<link rel="stylesheet" href="~/Content/kendo.default.mobile.min.css" />
+<link href="~/Content/handsometable.css" media="all" rel="stylesheet" type="text/css" />
+<script src="~/Scripts/handsometable.js"></script>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/dropboxexplorer.js"></script>
+
+<script src="https://npmcdn.com/dropbox/dist/Dropbox-sdk.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jszip/2.4.0/jszip.js"></script>
+<script src="~/Scripts/kendo.all.min.js"></script>
+<h2>Shopify Products</h2>
+<br />
+
+<button id="chooser">Choose dropbox folder</button><label id="foldercam"> Dropbox folder</label>
+<br /><br /><br />
+<div id="example"></div>
+<br /><br /><br />
+<div id="loading" style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;">
+    <img src='~/Content/' width="64" height="64" />
+</div>
+<div id="grid"></div>
+<div id="grid2"></div>
+<br /><br />
+<input id="Check" type="button" value="CHECK">
+
+
+<button id="export" hidden>Export to Excel</button>
+<style type="text/css">
+    .customer-photo {
+        display: inline-block;
+        width: 128px;
+        height: 128px;
+        border-radius: 50%;
+        background-size: 80px 80px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        margin-left: 5px;
+    }
+    button {
+     background:none!important;
+     border:none; 
+     padding:0!important;
+     font: inherit;
+     /*border is optional*/
+     border-bottom:1px solid #444; 
+     cursor: pointer;
+}
+</style>
+
+<script>
+     
+    var dropboxFolder = "";
+
+    explorer.on('success', function (files) {
+        dropboxFolder = files[0].path;
+        $("#foldercam").text(dropboxFolder);
+    });
+
+    explorer.choosify($('#chooser'));
+    var htContents;
+    var container = document.getElementById('example');
+
+    var hot = new Handsontable(container, {
+        columns: [
+
+            {
+                data: 'ColumnA',
+                type: 'text',
+            }, {
+                data: 'ColumnB',
+                type: 'text',
+            }, {
+                data: 'ColumnC',
+                type: 'text',
+            }
+            , {
+                data: 'ColumnD',
+                type: 'text',
+            }, {
+                data: 'ColumnE',
+                type: 'text',
+            }, {
+                data: 'ColumnF',
+                type: 'text',
+            }, {
+                data: 'ColumnG',
+                type: 'text',
+            }, {
+                data: 'ColumnH',
+                type: 'text',
+            }, {
+                data: 'TITLE',
+                type: 'text',
+            }, {
+                data: 'ColumnJ',
+                type: 'text',
+            }, {
+                data: 'ColumnK',
+                type: 'text',
+            }, {
+                data: 'ColumnL',
+                type: 'text',
+            }, {
+                data: 'ColumnM',
+                type: 'text',
+            }, {
+                data: 'ColumnN',
+                type: 'text',
+            }, {
+                data: 'ColumnO',
+                type: 'text',
+            }, {
+                data: 'ColumnP',
+                type: 'text',
+            }, {
+                data: 'ColumnQ',
+                type: 'text',
+            }, {
+                data: 'ColumnR',
+                type: 'text',
+            }, {
+                data: 'ColumnS',
+                type: 'text',
+            }, {
+                data: 'ColumnT',
+                type: 'text',
+            }, {
+                data: 'ColumnU',
+                type: 'text',
+            }, {
+                data: 'ColumnV',
+                type: 'text',
+            }, {
+                data: 'ColumnW',
+                type: 'text',
+            }, {
+                data: 'ColumnX',
+                type: 'text',
+            }, {
+                data: 'SIZE',
+                type: 'text',
+            }, {
+                data: 'ColumnZ',
+                type: 'text',
+            }, {
+                data: 'Columnaa',
+                type: 'text',
+            }
+
+        ],
+        columnSorting: true,
+        sortIndicator: true,
+        rowHeaders: true,
+        minSpareRows: 1, colWidths: [47, 47, 47, 47, 47, 47, 47],
+        stretchH: 'all',
+        contextMenu: true,
+        colHeaders: ["Shopify", "ETSY", "SKU", "SKUWEBSITE", "Comments", "OBS", "G", "Cost", "PRICE", "Title", "Desc", "Design", "ERA", "Mats", "Vintage", "notes", "shoulderToShr", "bust", "Waist", "hips", "Overall Length", "GarmentWidth", "PantsBottomW", "WaistToCrotch", "CrotchToBottom", "Size", "US"],
+        startRows: 1,
+
+    });
+    var data = new Array();
+    var _arrayData = new Array();
+    var arrayName = new Array();
+    $("#Check").click(function () {
+
+        data = new Array();
+        var $container = $('#example');
+        _arrayData = hot.getData();
+        arrayName = hot.getDataAtCol(3);
+
+        var arrayTitle = hot.getDataAtCol(8 + 1);
+        var arraySize = hot.getDataAtCol(24 + 1);
+        var dhtContents = JSON.stringify(arrayName);
+        var dbx = new Dropbox({
+            accessToken: '-dMohVVixk5QAAAAAAAaTVjiEx_hKCRpjoZmHXZYYN393K9zHf-Bb5IRof4dqKgWT'
+        });
+
+        var photosLength = 0;
+        var dataLength = 0;
+        dbx.filesListFolder({
+            path: dropboxFolder
+        })
+            .then(function (response) {
+                photosLength = response.entries.length;
+                for (i = 0; i < response.entries.length; i++) {
+                    var auxName = response.entries[i].name.split("_");
+
+                    if ((arrayName.indexOf(auxName[1]) != -1) && (auxName[2].indexOf("#") == -1)) {
+
+                        dbx.filesGetTemporaryLink({
+                            path: response.entries[i].path_display
+                        }).then(function (response) {
+                            dataLength++;
+                            var nameResponse = response.metadata.name.split("_")[1];
+                            var obj = data.filter(function (obj) {
+                                return obj.name === nameResponse;
+                            })[0];
+                            if (typeof obj != 'undefined') {
+                                obj.links.push(response.link)
+
+                            }
+                            else {
+                                var intName = arrayName.indexOf(nameResponse);
+                                var url = {
+                                    name: nameResponse,
+                                    title: arrayTitle[intName],
+                                    tags: "",
+                                    extra: new Array()
+                                };
+                                var numberTitle = _arrayData[intName][11 + 1];
+                                if (numberTitle != "") {
+                                    url.extra.push("Decades > " + numberTitle);
+                                }
+                                //  url.title.replace(/[^0-9]/g,'');
+                                // if (!isNaN(numberTitle))
+                                // {
+                                // 	if ( numberTitle>=1890)
+                                // 	{
+                                // 		url.extra.push("Decades > " +numberTitle + "s");
+                                // 	}
+                                // 	else
+                                // 	{
+                                // 		url.extra.push("Decades > 1800s");
+                                // 	}
+                                // }
+
+                                var designerTitle = _arrayData[intName][10 + 1] != "" ? "Designers > " + _arrayData[intName][10 + 1] : "";// SearchDesigner(url.title);
+                                if (designerTitle != "")
+                                    url.extra.push(designerTitle);
+                                url.body = HandleBody(intName);
+                                url.variantSKU = _arrayData[intName][2] + "_" + _arrayData[intName][3];
+                                url.extra = url.extra.concat(HandleSize(intName, arraySize));
+                                url.extra = url.extra.concat(HandleTitle(url.title, numberTitle));
+                                url.tags = url.extra.toString();
+                                url.links = new Array();
+                                url.links.push(response.link);
+                                data.push(url);
+                            }
+
+                            if (photosLength === dataLength)
+                                FinishLoad();
+
+                        }).catch(function (error) {
+                            photosLength--;
+                            console.log(error);
+                        });
+                    }
+                    else {
+                        photosLength--;
+                    }
+                }
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    });
+
+    function HandleBody(position) {
+        var body = "<ul class='tabs'><li><a href='#tab-1'>Product Description</a></li><li><a href='#tab-2'> Measurements</a></li></ul><div id='tab-1'><p>For more information about this product+ please contact <a href='http://morphewconcept.com/pages/contact' target='_blank'>info@morphewconcept.com</a></p> ";
+        var l = "<p><strong>Decade:</strong>" + _arrayData[position][11 + 1] + ".</p>";
+        var m = "<p><strong>Material:</strong>" + _arrayData[position][12 + 1] + ".</p>";
+        var n = "<p><strong>Vintage condition:</strong>" + _arrayData[position][13 + 1] + ".</p> ";
+        var o = " <p>" + _arrayData[position][14 + 1] + " .</p>";
+        var mea = "</div><div id='tab-2'><p><strong>Measurements:</strong></p>";
+        var p = "<p><strong>Shoulder to Shoulder:</strong>" + _arrayData[position][15 + 1] + " in.</p>";
+        var q = "<p><strong>Bust:</strong>" + _arrayData[position][16 + 1] + " in.</p>";
+        var r = "<p><strong>Waist:</strong>" + _arrayData[position][17 + 1] + " in.</p>";
+        var s = "<p><strong>Hips:</strong>" + _arrayData[position][18 + 1] + " in.</p>";
+        var t = "<p><strong>Overall length:</strong>" + _arrayData[position][19 + 1] + " in.</p>";
+        var u = "<p><strong>Garment width:</strong>" + _arrayData[position][20 + 1] + " in.</p>";
+        var v = "<p><strong>Pants bottom width:</strong>" + _arrayData[position][21 + 1] + " in.</p>";
+        var w = "<p><strong>Waist to crotch:</strong>" + _arrayData[position][22 + 1] + " in.</p>";
+        var x = "<p><strong>Crotch to bottom:</strong>" + _arrayData[position][23 + 1] + " in.</p>";
+        var y = "<p><strong>Size:</strong>" + _arrayData[position][24 + 1] + ".</p>";
+        var z = "<p><strong>US:</strong>" + _arrayData[position][25 + 1] + ".</p>";
+        var last = '<p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Morphew_Measurements_Guide.png" target="_blank" title="Morphew Measurements Guide"><strong>Measurements Guide</strong></a></p><p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Sizing_Chart.jpg" target="_blank" title="Morphew Sizing Chart"><strong>Sizing Chart</strong></a></p><p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Vintage_Condition_chart.jpg" target="_blank" title="Morphew Vintage Condition Chart"><strong>Vintage Condition Chart</strong></a></p></div>';
+        return body + (_arrayData[position][11 + 1] != "" ? l : "") + (_arrayData[position][12 + 1] != "" ? m : "") + (_arrayData[position][13 + 1] != "" ? n : "") + (_arrayData[position][14 + 1] != "" ? o : "") + mea + (_arrayData[position][15 + 1] != "" ? p : "") + (_arrayData[position][16 + 1] != "" ? q : "") + (_arrayData[position][17 + 1] != "" ? r : "") + (_arrayData[position][18 + 1] != "" ? s : "") + (_arrayData[position][19 + 1] != "" ? t : "") + (_arrayData[position][20 + 1] != "" ? u : "") + (_arrayData[position][21 + 1] != "" ? v : "") + (_arrayData[position][22 + 1] != "" ? w : "") + (_arrayData[position][23 + 1] != "" ? x : "") + (_arrayData[position][24 + 1] != "" ? y : "") + (_arrayData[position][25 + 1] != "" ? z : "") + last;
+    }
+    function HandleSize(position, _arraySize) {
+        var separators = ['\\\/', '-'];
+        var sizeCloath = _arraySize[position].split(new RegExp(separators.join('|'), 'g'));
+        var sizetag = new Array();
+        for (var i = sizeCloath.length - 1; i >= 0; i--) {
+            sizeCloath[i] = sizeCloath[i].toUpperCase()
+            if (sizeCloath[i] == "XS")
+                sizetag.push("Size > Extra Small");
+            else if (sizeCloath[i] == "S")
+                sizetag.push("Size > Small");
+            else if (sizeCloath[i] == "M")
+                sizetag.push("Size > Medium");
+            else if (sizeCloath[i] == "L")
+                sizetag.push("Size > Large");
+            else if (sizeCloath[i] == "XL")
+                sizetag.push("Size > Extra Large");
+            else if (sizeCloath[i] == "ONE SIZE") {
+                sizetag.push("Size > Extra Small")
+                sizetag.push("Size > Small");
+                sizetag.push("Size > Medium");
+                sizetag.push("Size > Large");
+                sizetag.push("Size > Extra Large");
+                sizetag.push("Size > One Size");
+            }
+        }
+        return sizetag;
+    }
+    function HandleTitle(title, year) {
+        if (year.indexOf("'") != -1)
+            title = title.replace(year.substring(0, 4) + "'s", "").trim();
+        else if (title.indexOf(year) != -1)
+            title = title.replace(year, "").trim();
+        else if (title.substring(0, 6).indexOf("'") != -1)
+            title = title.replace(year.substring(0, 4) + "'s", "").trim();
+        else
+            title = title.replace(year, "").trim();
+        title = title.replace(/\s\s+/g, ' ');
+        return HandleArticles(title).trim().split(" ");
+    }
+    function HandleArticles(title) {
+        for (var i = articles.length - 1; i >= 0; i--) {
+            if (title.indexOf(articles[i]) != -1) {
+                title = title.replace(articles[i], " ");
+            }
+        }
+        return title.replace(/\s\s+/g, ' ');
+    }
+    function SearchDesigner(title) {
+
+        length = designers.length;
+        while (length--) {
+
+            if (title.indexOf(designers[length]) != -1) {
+
+                return ("Designers > " + designers[length]);
+            }
+        }
+        return "";
+    }
+    //
+    function FinishLoad() {
+        $("#export").show();
+        $("#grid").kendoGrid({
+
+            excel: {
+                fileName: "ProductsData.xlsx",
+                filterable: false
+            },
+            dataSource: {
+                batch: true,
+                data: data,
+                schema: {
+                    model: {
+                        fields: {
+                            name: {
+                                editable: false
+                            },
+                            title: {
+                                editable: false
+                            }, designer: {
+                                editable: false
+                            },
+                            tags: {
+
+                            },
+                            type: { defaultValue: { typeId: "Cloaths", typeName: "Cloaths" } },
+                        }
+                    }
+                },
+                pageSize: 200
+            },
+            scrollable: false,
+            editable: true,
+            sortable: true,
+            groupable: true,
+            pageable: {
+                refresh: true,
+            },
+            columns: [{
+                template: "<div>" +
+                           "#for ( var i=0;i<data.links.length;i++){ #" +
+                           "<img id='#:data.name + i#' onClick='deleteimage(#=i#, &quot;#=name#&quot;)' class='customer-photo' src='#:data.links[i]#'/>  # } #</div>",
+
+                title: "Pictures"
+            }, {
+                field: "name",
+                title: "Name"
+            }, {
+                field: "title",
+                title: "Title", width: "180px"
+            }, {
+                field: "tags",
+                title: "tags", width: "480px"
+            }, {
+                field: "designer",
+                title: "designer"
+            }, { field: "type", title: "type", width: "180px", editor: categoryDropDownEditor, template: "#=type#" },
+                    { command: "destroy", title: "&nbsp;", width: 150 }], editable: true
+        });
+        return false;
+    }
+
+    function deleteimage(ee, f) {
+
+        var grid = $("#grid").data("kendoGrid");
+        var newData = grid.dataSource.data();
+        var result = $.grep(newData, function (e) { return e.name == f; });
+        result[0].links.splice(ee, 1);
+
+        var dataSource = new kendo.data.DataSource({ data: newData });
+
+        dataSource.read();
+        grid.setDataSource(dataSource);
+    }
+    $("#export").click(function (e) {
+        var grid = $("#grid").data("kendoGrid");
+        var newData = grid.dataSource.data();
+        var Things = new Array();
+        var count = 0;
+        for (var i = 0; i < newData.length ; i++) {
+            var intName = arrayName.indexOf(newData[i].name);
+            Things[i] = { handle: newData[i].title };
+            newData[i].title = newData[i].title.replace(" ", "-").toLowerCase();
+
+            Things[i].tags = newData[i].tags;
+            Things[i].product_type = newData[i].type;
+            Things[i].title = _arrayData[intName][9];
+            Things[i].body_html = newData[i].body;
+            Things[i].vendor = "Morphew";
+            Things[i].published = "false";
+            Things[i].variants = new Array();
+            Things[count].optname = "Title";
+            Things[count].optvalue = "Default Title";
+            var Variant = { price: _arrayData[intName][8], sku: newData[i].variantSKU, barcode: "*" + _arrayData[intName][3] + "*" }
+            Things[i].variants.push(Variant);
+            var Images = new Array();
+            for (var j = 0; j < newData[i].links.length; j++) {
+
+                Images.push({ src: newData[i].links[j] });
+            }
+            Things[i].images = Images;
+        }
+        $.ajax({
+            url: "/Products/pushpush",
+            data: JSON.stringify({ products: Things }),
+            dataType: "json",
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                alert(data)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown)
+            }
+        });
+        
+
+    });
+    var articles = [' a ', ' an ', ' and ', ' with ', " of "]
+    var dataTypes = ['BAG', 'BLOUSE', 'CAFTAN', 'CAPE', 'COAT', 'COLLAR', 'CORSET', 'DRESS', 'GIFT CARD', 'HEADWEAR', 'JACKET', 'JACKET and DRESS', 'JEWELRY', 'JUMPSUIT', 'KIMONO', 'LINGERIE', 'PANTS', 'PONCHO', 'SCARF', 'SET', 'SHAWL', 'SHIRT', 'SHOES', 'SKIRT', 'SOLD', 'SUIT', 'SUNGLASSES', 'SWEATER', 'SWIMSUIT', 'TOP', 'TUNIC', 'TWO PIECE', 'VEST', ]
+    var designers = ["Adele Simpson", "Albert Nipon", "Alexander Mcqueen", "Andre Laug", "Ann Demeulemeester", "Azzedine Alaia", "Ba-Tzu", "Balenciaga", "Bernard Perris", "Bill Blass", "Bob Bugnand", "Bob Mackie", "Byblos", "Byron Lars", "Calvin Klein", "Carven", "Chanel", "Chloe", "Christian Dior", "Christian Lacroix", "Claude Montana", "Comme Des Garcons", "Courreges", "Custo Barcelona", "Diane Freis", "Dolce & Gabbana", "Don Loper", "Donald Brooks", "Donna Karan", "Dorothy O’hara", "Downhill Racer", "Eleanor Frank Costumes", "Elizabeth Arden", "Elsa Schiaparelli", "Emanuel Ungaro", "Emmanuelle Khanh", "Ermanno Scervino", "Escada", "Eugene Alexander", "Fontana Couture", "France Andrevie", "Frank Usher", "Franklin Simon", "French Rags", "Geny (First Versace’s Job)", "Geoffrey Beene", "George Peter Stavropoulos", "Georgie Keyloun", "Gianfranco Ferre", "Gibo", "Gina Fratini", "Giorgio Sant’angelo", "Givenchy", "Gucci", "Guy Laroche", "Halston", "Helmut Lang", "Helmut Lang", "Henrik Vibskov", "Hermes", "Herve Leger", "Holly's Harp", "Issey Miyake", "J.P. O'connor", "Jack Bryan", "Jacklin Design", "James Galanos", "Jean Claude Jitrois", "Jean Patou", "Jean Paul Gaultier", "Jo Copeland", "John Galliano", "Jomer Imports Ltd", "Junko Koshino", "Junya Watanabe", "Kansai Yamamoto", "Karl Lagerfeld", "Kenzo", "Kevan Hall Couture", "Koji Nihonmatsu", "Krizia", "Lanson", "Lanvin", "Larry Aldrich", "Lemaitre", "Leonard", "Loranchet", "Loris Azzaro", "Louis Feraud", "Maggy Rouff", "Maison Martin Margiela", "Malcolm Starr", "Marisa Martin Knightsbridge", "Marithe + Francois Girbaud", "Martine Sitbon", "Mary Brockhoff", "Mary Mcfadden", "Matsuda", "Meshach Taylor", "Missoni", "Michaele Vollbracht", "Miu Miu", "Moschino", "Mr. Blackwell Design", "Naeem Khan", "Nina Ricci", "Norma Kamali", "Oleg Cassini", "Oscar De La Renta", "Paco Rabanne", "Parasuco", "Pat Sandler", "Patrick Kelly", "Paul Whitney", "Peter Kappler", "Pierre Balmain", "Pierre Cardin", "Plein Sud", "Prada", "Richilene", "Rifat Ozbek", "Roberto Cavalli", "Romeo Gigli", "Rundholz", "Saga Fox", "Sonia Rykiel", "Sophie Finzi", "Sophie Sitbon", , "Stavropoulos", "Stephen Burrows", "Ted Lapidus", "Thierry Mugler", "Tina Leser", "Trina Lewis & Marjon", "Valentino", "Versace", "Vicky Tiel", "Victor Costa I. Magnin", "Vivienne Westwood", "William Dust", "William Travilla", "Y’s", "Yohji Yamamoto", "Yves Saint Laurent", "Zandra Rhodes Hand"];
+    function categoryDropDownEditor(container, options) {
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                autoBind: true,
+                dataSource: {
+                    data: dataTypes
+                }
+            });
+    }
+    $(document).ajaxStart(function () {
+        $("#loading").show();
+    });
+    $(document).ajaxStop(function () {
+        $("#loading").hide();
+    });
+    $(document).unbind('keydown').bind('keydown', function (event) {
+        var doPrevent = false;
+        if (event.keyCode === 8) {
+            var d = event.srcElement || event.target;
+            if ((d.tagName.toUpperCase() === 'INPUT' &&
+                 (
+                     d.type.toUpperCase() === 'TEXT' ||
+                     d.type.toUpperCase() === 'PASSWORD' ||
+                     d.type.toUpperCase() === 'FILE' ||
+                     d.type.toUpperCase() === 'SEARCH' ||
+                     d.type.toUpperCase() === 'EMAIL' ||
+                     d.type.toUpperCase() === 'NUMBER' ||
+                     d.type.toUpperCase() === 'DATE')
+                 ) ||
+                 d.tagName.toUpperCase() === 'TEXTAREA') {
+                doPrevent = d.readOnly || d.disabled;
+            }
+            else {
+                doPrevent = true;
+            }
+        }
+
+        if (doPrevent) {
+            event.preventDefault();
+        }
+    });
+    jQuery.fn.single_double_click = function (single_click_callback, double_click_callback, timeout) {
+        return this.each(function () {
+            var clicks = 0, self = this;
+            jQuery(this).click(function (event) {
+                clicks++;
+                if (clicks == 1) {
+                    setTimeout(function () {
+                        if (clicks == 1) {
+                            single_click_callback.call(self, event);
+                        } else {
+                            double_click_callback.call(self, event);
+                        }
+                        clicks = 0;
+                    }, timeout || 300);
+                }
+            });
+        });
+    }
+</script>
