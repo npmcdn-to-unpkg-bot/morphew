@@ -52,7 +52,7 @@ namespace Shopify.Controllers
                                                         this.Url.Action("ShopifyAuthCallback", "Account")));
 
                 var authorizer = new ShopifyAPIAuthorizer(shopName, ConfigurationManager.AppSettings["Shopify.ConsumerKey"], ConfigurationManager.AppSettings["Shopify.ConsumerSecret"]);
-                var authUrl = authorizer.GetAuthorizationURL(new string[] { ConfigurationManager.AppSettings["Shopify.Scope"] }, returnURL.ToString());
+                var authUrl = authorizer.GetAuthorizationURL(new string[] { ConfigurationManager.AppSettings["Shopify.Scope"] }, "http://morphew.apphb.com/Account/ShopifyAuthCallback");
                 return Redirect(authUrl);
             }
 
