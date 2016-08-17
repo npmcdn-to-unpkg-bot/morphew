@@ -54,7 +54,7 @@
 </style>
 
 <script>
-    $(function () {
+    
         var dropboxFolder = "";
         var explorer = window.Kloudless.explorer({
             // Explorer Initialization options here.
@@ -181,7 +181,7 @@
             var arraySize = hot.getDataAtCol(24 + 1);
             var dhtContents = JSON.stringify(arrayName);
             var dbx = new Dropbox({
-                accessToken: '-dMohVVixk5QAAAAAAAaTVjiEx_hKCRpjoZmHXZYYN393K9zHf-Bb5IRof4dqKgWT'
+                accessToken: 'dMohVVixk5QAAAAAAAaWVXtY3qGPo0_CaptCqbrO9StrAaBi5jMmwsVddKOEs0gc'
             });
 
             var photosLength = 0;
@@ -193,14 +193,16 @@
                     photosLength = response.entries.length;
                     for (i = 0; i < response.entries.length; i++) {
                         var auxName = response.entries[i].name.split("_");
-
-                        if ((arrayName.indexOf(auxName[1]) != -1) && (auxName[2].indexOf("#") == -1)) {
-
+                        
+                        if ((arrayName.indexOf(auxName[auxName.length-2]) != -1) && (auxName[auxName.length-1].indexOf("#") == -1)) {
+                            console.log("consiguio")
+                            console.log(response.entries[i].name)
                             dbx.filesGetTemporaryLink({
                                 path: response.entries[i].path_display
                             }).then(function (response) {
                                 dataLength++;
-                                var nameResponse = response.metadata.name.split("_")[1];
+                                var split = response.metadata.name.split("_");
+                                var nameResponse = split[split.length - 2];
                                 var obj = data.filter(function (obj) {
                                     return obj.name === nameResponse;
                                 })[0];
@@ -345,7 +347,19 @@
             }
             return "";
         }
-        //
+
+        function deleteimage(ee, f) {
+
+            var grid = $("#grid").data("kendoGrid");
+            var newData = grid.dataSource.data();
+            var result = $.grep(newData, function (e) { return e.name == f; });
+            result[0].links.splice(ee, 1);
+
+            var dataSource = new kendo.data.DataSource({ data: newData });
+
+            dataSource.read();
+            grid.setDataSource(dataSource);
+        }
         function FinishLoad() {
             $("#export").show();
             $("#grid").kendoGrid({
@@ -408,18 +422,6 @@
             return false;
         }
 
-        function deleteimage(ee, f) {
-
-            var grid = $("#grid").data("kendoGrid");
-            var newData = grid.dataSource.data();
-            var result = $.grep(newData, function (e) { return e.name == f; });
-            result[0].links.splice(ee, 1);
-
-            var dataSource = new kendo.data.DataSource({ data: newData });
-
-            dataSource.read();
-            grid.setDataSource(dataSource);
-        }
         $("#export").click(function (e) {
             var grid = $("#grid").data("kendoGrid");
             var newData = grid.dataSource.data();
@@ -527,5 +529,5 @@
                 });
             });
         }
-    });
+   
 </script>
