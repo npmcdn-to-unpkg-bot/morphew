@@ -51,9 +51,9 @@ namespace Shopify.Controllers
                 //                                        u1.Host,
                 //                                        this.Url.Action("ShopifyAuthCallback", "Account")));
 
-                //var authorizer = new ShopifyAPIAuthorizer(shopName, ConfigurationManager.AppSettings["Shopify.ConsumerKey"], ConfigurationManager.AppSettings["Shopify.ConsumerSecret"]);
-                //var authUrl = authorizer.GetAuthorizationURL(new string[] { ConfigurationManager.AppSettings["Shopify.Scope"] }, "http://morphew.apphb.com/Account/ShopifyAuthCallback");
-                //return Redirect(authUrl);
+                var authorizer = new ShopifyAPIAuthorizer(shopName, ConfigurationManager.AppSettings["Shopify.ConsumerKey"], ConfigurationManager.AppSettings["Shopify.ConsumerSecret"]);
+                var authUrl = authorizer.GetAuthorizationURL(new string[] { ConfigurationManager.AppSettings["Shopify.Scope"] }, "http://morphew.apphb.com/Account/ShopifyAuthCallback");
+                return Redirect(authUrl);
             }
 
             return View(model);
