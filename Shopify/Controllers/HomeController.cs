@@ -9,7 +9,7 @@ using ShopifyAPIAdapterLibrary;
 
 namespace Shopify.Controllers
 {
-   
+    [ShopifyAuthorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
