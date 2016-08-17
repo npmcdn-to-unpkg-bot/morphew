@@ -56,7 +56,10 @@
 <script>
     $(function () {
         var dropboxFolder = "";
-
+        var explorer = window.Kloudless.explorer({
+            // Explorer Initialization options here.
+            app_id: "Pc9eUGO7coHp4LNKVf_y8f_BYvk6Gio84UatxZ7QtWPUY_PG",
+        });
         explorer.on('success', function (files) {
             dropboxFolder = files[0].path;
             $("#foldercam").text(dropboxFolder);
