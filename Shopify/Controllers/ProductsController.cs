@@ -41,26 +41,33 @@ namespace Shopify.Controllers
             
             foreach (var item in products)
             {
-                ProductViewModel send = new ProductViewModel();
-                send.product = item;
-                dynamic createproductResponse = this._shopify.Post("/admin/products.json", send);
-                var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                var json = serializer.Serialize(collectionsResponse.custom_collections);
-                  if (createproductResponse.error==null)
+                try
                 {
-                    //send new arrival
-                    Collect cc = new Collect();
-                    cc.collection_id = 26468335;
-                    cc.product_id = createproductResponse.product.id;
+                    ProductViewModel send = new ProductViewModel();
+                    send.product = item;
+                    dynamic createproductResponse = this._shopify.Post("/admin/products.json", send);
+                    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                    var json = serializer.Serialize(collectionsResponse.custom_collections);
+                    if (createproductResponse.error == null)
+                    {
+                        //send new arrival
+                        Collect cc = new Collect();
+                        cc.collection_id = 26468335;
+                        cc.product_id = createproductResponse.product.id;
 
-                    this._shopify.Post("/admin/collects.json", new CollectViewModel(cc));
-                    //send clothing
-                    cc.collection_id = 26417119;
-                    cc.product_id = createproductResponse.product.id; this._shopify.Post("/admin/collects.json", new CollectViewModel(cc));
-                    //assign the collections ids 
-                    return true;
+                        this._shopify.Post("/admin/collects.json", new CollectViewModel(cc));
+                        //send clothing
+                        cc.collection_id = 26417119;
+                        cc.product_id = createproductResponse.product.id;
+                        this._shopify.Post("/admin/collects.json", new CollectViewModel(cc));
+                        //assign the collections ids 
+                        Console.WriteLine(item.title);
+                    }
                 }
-
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
 
             return false;
