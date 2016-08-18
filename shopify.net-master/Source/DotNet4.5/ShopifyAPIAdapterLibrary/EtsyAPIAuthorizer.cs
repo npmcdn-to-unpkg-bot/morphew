@@ -68,11 +68,13 @@ namespace ShopifyAPIAdapterLibrary
         /// </summary>
         /// <param name="code">a code given to you by shopify</param>
         /// <returns>Authorization state needed by the API client to make API calls</returns>
-        public ShopifyAuthorizationState AuthorizeClient(string code)
+        public EtsyAuthorizationState AuthorizeClient(string code)
         {
-            
+            return new EtsyAuthorizationState
+            {
+                AccessToken = code
+            };
 
-            return null;
         }
     }
 

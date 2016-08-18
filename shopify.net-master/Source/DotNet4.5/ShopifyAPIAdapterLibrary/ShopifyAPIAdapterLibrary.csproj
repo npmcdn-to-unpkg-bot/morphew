@@ -112,6 +112,7 @@
     <Compile Include="ShopifyApiClient.cs" />
     <Compile Include="JsonDataTranslator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EtsyAuthorizationState.cs" />
     <Compile Include="ShopifyAuthorizationState.cs" />
   </ItemGroup>
   <ItemGroup>

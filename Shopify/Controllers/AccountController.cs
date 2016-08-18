@@ -150,8 +150,9 @@ namespace Shopify.Controllers
             HttpCookie tempsecret = Request.Cookies["tempsecret"];
             var authorizer = new Etsy_portal(ConfigurationManager.AppSettings["Etsy.ConsumerKey"], ConfigurationManager.AppSettings["Etsy.ConsumerSecret"]);
             authorizer.ObtainTokenCredentials(myCookie.Value, tempsecret.Value, oauth_verifier,out permanent_token, out permanentSecret);
-             
-            return RedirectToAction("Index", "Home");
+            EtsyAuthorizationState authState = authorizer.AuthorizeClient(permanent_token);
+            Shopify.EtsyAuthorize.SetAuthorization(this.HttpContext, authState);
+            return RedirectToAction("Index", "Etsy");
         }
     }
 }
