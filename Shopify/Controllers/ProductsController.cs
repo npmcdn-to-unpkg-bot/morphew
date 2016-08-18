@@ -61,12 +61,12 @@ namespace Shopify.Controllers
                         cc.product_id = createproductResponse.product.id;
                         this._shopify.Post("/admin/collects.json", new CollectViewModel(cc));
                         //assign the collections ids 
-                        Console.WriteLine(item.title);
+                        //Console.WriteLine(item.title);
                     }
                 }
                 catch(Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    //Console.WriteLine(e.ToString());
                 }
             }
 
