@@ -109,6 +109,7 @@
     <Compile Include="EtsyAPIAuthorizer.cs" />
     <Compile Include="OAuth.cs" />
     <Compile Include="ShopifyAPIAuthorizer.cs" />
+    <Compile Include="EtsyApiClient.cs" />
     <Compile Include="ShopifyApiClient.cs" />
     <Compile Include="JsonDataTranslator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

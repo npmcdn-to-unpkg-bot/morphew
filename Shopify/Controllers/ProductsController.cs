@@ -10,7 +10,7 @@ using Shopify.Models;
 
 namespace Shopify.Controllers
 {
-    
+    [ShopifyAuthorize]
     public class ProductsController : Controller
     {
         ShopifyAPIClient _shopify;

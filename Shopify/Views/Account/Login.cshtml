@@ -1,31 +1,46 @@
 @model Shopify.Models.LoginModel
-
 @{
     ViewBag.Title = "Log in";
     var error = TempData["error"];
 }
-
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
+    <h1>@ViewBag.Title Shopify</h1>
     <h2>Enter your user name and password below.</h2>
 </hgroup>
-
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<div class="col-md-12">
+    <div class="col-md-6">
+        @using (Html.BeginForm((string)ViewBag.FormAction, "Account"))
+        {
+            @Html.ValidationSummary(true, "Log in was unsuccessful. Please correct the errors and try again.")
+            <p>@error</p>
+            <fieldset>
+                <legend>Log in Shopify</legend>
+                <ol>
+                    <li>
+                        @Html.LabelFor(m => m.ShopName)
+                        @Html.TextBoxFor(m => m.ShopName)
+                        @Html.ValidationMessageFor(m => m.ShopName)
+                        @Html.AntiForgeryToken()
+                    </li>
+                </ol>
+                <input type="submit" value="Log in" />
+            </fieldset>
+        }
+    </div>
+    <div class="col-md-6">
+    @using (Html.BeginForm("Etsy", "Account"))
+    {
+        @Html.ValidationSummary(true, "Log in was unsuccessful. Please correct the errors and try again.")
+        <p>@error</p>
+        <fieldset>
+            <legend>Log in Etsy</legend>
+            <ol>
+                <li>Login Etsy</li></ol>
 
-@using (Html.BeginForm((string)ViewBag.FormAction, "Account")) {
-    @Html.ValidationSummary(true, "Log in was unsuccessful. Please correct the errors and try again.")
-    <p>@error</p>
-    <fieldset>
-        <legend>Log in Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.ShopName)
-                @Html.TextBoxFor(m => m.ShopName)
-                @Html.ValidationMessageFor(m => m.ShopName)
-                @Html.AntiForgeryToken()
-            </li>
-        </ol>
-        <input type="submit" value="Log in" />
-    </fieldset>
-}
+                    <input type="submit" value="Etsy" />
+        </fieldset>
+    }
+    </div>
+</div>

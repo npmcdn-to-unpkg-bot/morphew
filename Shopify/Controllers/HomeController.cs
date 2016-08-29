@@ -28,8 +28,9 @@ namespace Shopify.Controllers
             return View();
 
         }
-
+       
         ShopifyAPIClient _shopify;
+       
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {

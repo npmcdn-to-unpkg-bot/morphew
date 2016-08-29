@@ -13,10 +13,13 @@ namespace ShopifyAPIAdapterLibrary
         public EtsyAuthorizationState()
         {
         }
- 
+
         /// <summary>
         /// 
         /// </summary>
         public string AccessToken { get; set; }
+        public string Secret { get; set; }
+        public string ConsumerKey { get; set; }
+        public string ConsumerSecret { get; set; }
     }
 }

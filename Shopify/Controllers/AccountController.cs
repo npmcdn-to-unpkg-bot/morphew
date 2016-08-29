@@ -58,56 +58,37 @@ namespace Shopify.Controllers
 
             return View(model);
         }
+        [HttpPost] 
         public ActionResult Etsy()
         {
-            return View();
+
+            Uri requestUrl = this.Url.RequestContext.HttpContext.Request.Url;
+            UriBuilder u1 = new UriBuilder(requestUrl.Authority);
+            u1.Port = -1;
+            Uri returnURL = new Uri(string.Format("{0}://{1}{2}",
+                                                    requestUrl.Scheme,
+                                                  u1.Uri.ToString(),
+                                                    this.Url.Action("EtsyAuthCallback", "Account")));
+
+            var authorizer = new Etsy_portal(ConfigurationManager.AppSettings["Etsy.ConsumerKey"], ConfigurationManager.AppSettings["Etsy.ConsumerSecret"]);
+
+
+            var authUrl = authorizer.GetConfirmUrl(out tempOauthToken, out tempsecret, returnURL.ToString());
+            HttpCookie myCookie = new HttpCookie("tempOauthToken");
+            HttpCookie tempsecretcookie = new HttpCookie("tempsecret");
+            DateTime now = DateTime.Now;
+
+            myCookie.Value = tempOauthToken;
+            myCookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
+            tempsecretcookie.Value = tempsecret;
+            tempsecretcookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
+
+            // Add the cookie.
+            Response.Cookies.Add(myCookie);
+            Response.Cookies.Add(tempsecretcookie);
+            return Redirect(authUrl); 
         }
-        /// <summary>
-        /// posted from the etsy form
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="returnUrl"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Etsy(LoginModel model, string returnUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                // strip the .myshopify.com in case they added it
-                string shopName = model.ShopName.Replace(".myshopify.com", String.Empty);
-
-                // prepare the URL that will be executed after authorization is requested
-
-                Uri requestUrl = this.Url.RequestContext.HttpContext.Request.Url;
-                UriBuilder u1 = new UriBuilder(requestUrl.Authority);
-                u1.Port = -1;
-                Uri returnURL = new Uri(string.Format("{0}://{1}{2}",
-                                                        requestUrl.Scheme,
-                                                        u1.Host!=""?u1.Host:u1.Scheme,
-                                                        this.Url.Action("EtsyAuthCallback", "Account")));
-
-                var authorizer = new Etsy_portal(ConfigurationManager.AppSettings["Etsy.ConsumerKey"], ConfigurationManager.AppSettings["Etsy.ConsumerSecret"]);
-                
-
-                var authUrl = authorizer.GetConfirmUrl(out tempOauthToken,out tempsecret, returnURL.ToString());
-                HttpCookie myCookie = new HttpCookie("tempOauthToken");
-                HttpCookie tempsecretcookie = new HttpCookie("tempsecret");
-                DateTime now = DateTime.Now;
-
-                myCookie.Value = tempOauthToken;
-                myCookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
-                tempsecretcookie.Value = tempsecret;
-                tempsecretcookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
-
-                // Add the cookie.
-                Response.Cookies.Add(myCookie);
-                Response.Cookies.Add(tempsecretcookie);
-                return Redirect(authUrl);
-            }
-
-            return View(model);
-        }
+        
         /// <summary>
         /// This action is called by shopify after the authorization has finished
         /// </summary>
@@ -150,9 +131,20 @@ namespace Shopify.Controllers
             HttpCookie tempsecret = Request.Cookies["tempsecret"];
             var authorizer = new Etsy_portal(ConfigurationManager.AppSettings["Etsy.ConsumerKey"], ConfigurationManager.AppSettings["Etsy.ConsumerSecret"]);
             authorizer.ObtainTokenCredentials(myCookie.Value, tempsecret.Value, oauth_verifier,out permanent_token, out permanentSecret);
-            EtsyAuthorizationState authState = authorizer.AuthorizeClient(permanent_token);
+            EtsyAuthorizationState authState = authorizer.AuthorizeClient(permanent_token, permanentSecret, ConfigurationManager.AppSettings["Etsy.ConsumerKey"], ConfigurationManager.AppSettings["Etsy.ConsumerSecret"]);
             Shopify.EtsyAuthorize.SetAuthorization(this.HttpContext, authState);
-            return RedirectToAction("Index", "Etsy");
+            HttpCookie temptokencookie = new HttpCookie("Etsy_permanentToken");
+            HttpCookie tempsecretcookie = new HttpCookie("Etsy_permanentSecret");
+            DateTime now = DateTime.Now;
+            temptokencookie.Value = permanent_token;
+            temptokencookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
+            tempsecretcookie.Value = permanentSecret;
+            tempsecretcookie.Expires = now.AddYears(50); // For a cookie to effectively never expire
+
+            // Add the cookie.
+            Response.Cookies.Add(temptokencookie);
+            Response.Cookies.Add(tempsecretcookie);
+            return RedirectToAction("listings", "Etsy");
         }
     }
 }

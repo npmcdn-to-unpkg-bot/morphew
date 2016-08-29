@@ -84,11 +84,14 @@ namespace ShopifyAPIAdapterLibrary
             return irestResponse.Content;
         }
 
-        public EtsyAuthorizationState AuthorizeClient(string code)
+        public EtsyAuthorizationState AuthorizeClient(string code, string secret, string consumerKey, string consumerSecret)
         {
             return new EtsyAuthorizationState
             {
-                AccessToken = code
+                AccessToken = code,
+                Secret = secret,
+                ConsumerKey =consumerKey,
+                ConsumerSecret = consumerSecret
             };
 
         }

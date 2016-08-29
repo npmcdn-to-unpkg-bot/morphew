@@ -190,11 +190,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Collect.cs" />
     <Compile Include="Models\CollectionS.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Images.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\EtsyProduct.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Variant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -263,7 +265,8 @@
     <Content Include="Views\Collections\Index.cshtml" />
     <Content Include="Views\Home\Products.cshtml" />
     <Content Include="Views\Account\Etsy.cshtml" />
-    <Content Include="Views\EtsyHome\Index.cshtml" />
+    <Content Include="Views\Etsy\Index.cshtml" />
+    <Content Include="Views\Etsy\Listings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

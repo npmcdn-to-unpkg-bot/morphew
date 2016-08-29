@@ -52,6 +52,7 @@ namespace ShopifyAPIAdapterLibrary
         /// <returns></returns>
         public string GetAuthorizationURL(string[] scope, string redirectUrl = null)
         {
+           
             var oauth = new Manager();
             // the URL to obtain a temporary "request token"
             var rtUrl = "https://openapi.etsy.com/v2/oauth/request_token?scope=email_r%20listings_r";

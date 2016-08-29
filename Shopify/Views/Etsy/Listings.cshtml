@@ -1,3 +1,4 @@
+@using Shopify.Models;
 @{
     ViewBag.Title = "Index";
 }
@@ -13,48 +14,34 @@
 <script src="https://npmcdn.com/dropbox/dist/Dropbox-sdk.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jszip/2.4.0/jszip.js"></script>
 <script src="~/Scripts/kendo.all.min.js"></script>
-<h2>Shopify Products</h2>
+<h2>Etsy Products</h2>
 <br />
 
-<button id="chooser">Choose dropbox folder</button><label id="foldercam"> Dropbox folder</label>
-<br /><br /><br />
-<div id="example"></div>
-<br /><br /><br />
-<div id="loading" style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;">
-    <img src='~/Content/' width="64" height="64" />
-</div>
-<div id="grid"></div>
-<div id="grid2"></div>
-<br /><br />
-<input id="Check" type="button" value="CHECK">
-
-
-<button id="export" hidden>Export to Excel</button>
-<style type="text/css">
-    .customer-photo {
-        display: inline-block;
-        width: 128px;
-        height: 128px;
-        border-radius: 50%;
-        background-size: 80px 80px;
-        background-position: center center;
-        vertical-align: middle;
-        line-height: 32px;
-        margin-left: 5px;
-    }
-    button {
-     background:none!important;
-     border:none; 
-     padding:0!important;
-     font: inherit;
-     /*border is optional*/
-     border-bottom:1px solid #444; 
-     cursor: pointer;
+@if (ViewBag.categories == null)
+{
+    <p>There are no blogs yet.</p>
 }
-</style>
-
-<script>
+else
+{
     
+ 
+
+    <button id="chooser">Choose dropbox folder</button><label id="foldercam"> Dropbox folder</label>
+    <br /><br /><br />
+    <div id="example"></div>
+    <br /><br /><br />
+    <div id="loading" style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;">
+        <img src='~/Content/' width="64" height="64" />
+    </div>
+    <div id="grid"></div>
+    <div id="grid2"></div>
+    <br /><br />
+    <input id="Check" type="button" value="CHECK">
+
+
+    <button id="export" hidden>Export to Excel</button>
+    <script type="text/javascript">
+
         var dropboxFolder = "";
         var explorer = window.Kloudless.explorer({
             // Explorer Initialization options here.
@@ -193,10 +180,8 @@
                     photosLength = response.entries.length;
                     for (i = 0; i < response.entries.length; i++) {
                         var auxName = response.entries[i].name.split("_");
-                        
-                        if ((arrayName.indexOf(auxName[auxName.length-2]) != -1) && (auxName[auxName.length-1].indexOf("#") == -1)) {
-                            console.log("consiguio")
-                            console.log(response.entries[i].name)
+
+                        if ((arrayName.indexOf(auxName[auxName.length - 2]) != -1) && (auxName[auxName.length - 1].indexOf("#") == -1)) {
                             dbx.filesGetTemporaryLink({
                                 path: response.entries[i].path_display
                             }).then(function (response) {
@@ -220,7 +205,7 @@
                                     };
                                     var numberTitle = _arrayData[intName][11 + 1];
                                     if (numberTitle != "") {
-                                        url.extra.push("Decades > " + numberTitle);
+                                        url.extra.push(numberTitle);
                                     }
                                     //  url.title.replace(/[^0-9]/g,'');
                                     // if (!isNaN(numberTitle))
@@ -238,12 +223,14 @@
                                     var designerTitle = _arrayData[intName][10 + 1] != "" ? "Designers > " + _arrayData[intName][10 + 1] : "";// SearchDesigner(url.title);
                                     if (designerTitle != "")
                                         url.extra.push(designerTitle);
-                                    url.body = HandleBody(intName);
                                     url.variantSKU = _arrayData[intName][2] + "_" + _arrayData[intName][3];
+                                    
+                                    url.body = HandleBody(intName,url.variantSKU);
                                     url.extra = url.extra.concat(HandleSize(intName, arraySize));
                                     url.extra = url.extra.concat(HandleTitle(url.title, numberTitle));
                                     url.tags = url.extra.toString();
                                     url.links = new Array();
+                                    url.type = { category_id: "69195603", name: "dress" };
                                     url.links.push(response.link);
                                     data.push(url);
                                 }
@@ -267,26 +254,89 @@
                 });
         });
 
-        function HandleBody(position) {
-            var body = "<ul class='tabs'><li><a href='#tab-1'>Product Description</a></li><li><a href='#tab-2'> Measurements</a></li></ul><div id='tab-1'><p>For more information about this product+ please contact <a href='http://morphewconcept.com/pages/contact' target='_blank'>info@morphewconcept.com</a></p> ";
-            var l = "<p><strong>Decade:</strong>" + _arrayData[position][11 + 1] + ".</p>";
-            var m = "<p><strong>Material:</strong>" + _arrayData[position][12 + 1] + ".</p>";
-            var n = "<p><strong>Vintage condition:</strong>" + _arrayData[position][13 + 1] + ".</p> ";
-            var o = " <p>" + _arrayData[position][14 + 1] + " .</p>";
-            var mea = "</div><div id='tab-2'><p><strong>Measurements:</strong></p>";
-            var p = "<p><strong>Shoulder to Shoulder:</strong>" + _arrayData[position][15 + 1] + " in.</p>";
-            var q = "<p><strong>Bust:</strong>" + _arrayData[position][16 + 1] + " in.</p>";
-            var r = "<p><strong>Waist:</strong>" + _arrayData[position][17 + 1] + " in.</p>";
-            var s = "<p><strong>Hips:</strong>" + _arrayData[position][18 + 1] + " in.</p>";
-            var t = "<p><strong>Overall length:</strong>" + _arrayData[position][19 + 1] + " in.</p>";
-            var u = "<p><strong>Garment width:</strong>" + _arrayData[position][20 + 1] + " in.</p>";
-            var v = "<p><strong>Pants bottom width:</strong>" + _arrayData[position][21 + 1] + " in.</p>";
-            var w = "<p><strong>Waist to crotch:</strong>" + _arrayData[position][22 + 1] + " in.</p>";
-            var x = "<p><strong>Crotch to bottom:</strong>" + _arrayData[position][23 + 1] + " in.</p>";
-            var y = "<p><strong>Size:</strong>" + _arrayData[position][24 + 1] + ".</p>";
-            var z = "<p><strong>US:</strong>" + _arrayData[position][25 + 1] + ".</p>";
-            var last = '<p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Morphew_Measurements_Guide.png" target="_blank" title="Morphew Measurements Guide"><strong>Measurements Guide</strong></a></p><p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Sizing_Chart.jpg" target="_blank" title="Morphew Sizing Chart"><strong>Sizing Chart</strong></a></p><p><a href="https://cdn.shopify.com/s/files/1/0492/7201/files/Vintage_Condition_chart.jpg" target="_blank" title="Morphew Vintage Condition Chart"><strong>Vintage Condition Chart</strong></a></p></div>';
-            return body + (_arrayData[position][11 + 1] != "" ? l : "") + (_arrayData[position][12 + 1] != "" ? m : "") + (_arrayData[position][13 + 1] != "" ? n : "") + (_arrayData[position][14 + 1] != "" ? o : "") + mea + (_arrayData[position][15 + 1] != "" ? p : "") + (_arrayData[position][16 + 1] != "" ? q : "") + (_arrayData[position][17 + 1] != "" ? r : "") + (_arrayData[position][18 + 1] != "" ? s : "") + (_arrayData[position][19 + 1] != "" ? t : "") + (_arrayData[position][20 + 1] != "" ? u : "") + (_arrayData[position][21 + 1] != "" ? v : "") + (_arrayData[position][22 + 1] != "" ? w : "") + (_arrayData[position][23 + 1] != "" ? x : "") + (_arrayData[position][24 + 1] != "" ? y : "") + (_arrayData[position][25 + 1] != "" ? z : "") + last;
+        function HandleBody(position,sku) {
+            // var body = newData[position].title.replace(" ", "-").toLowerCase();
+            var l = "Decade: " + _arrayData[position][11 + 1] + ". \n";
+            //var m = "<p><strong>Material:</strong>" + _arrayData[position][12 + 1] + ".</p>";
+            var n = "Vintage condition: " + _arrayData[position][13 + 1] + " \n";
+            // var o = " <p>" + _arrayData[position][14 + 1] + " .</p>";
+            var mea = "Measurements in inches:\n";
+            var p = "Shoulder to Shoulder:" + _arrayData[position][15 + 1] + "  \n";
+            var q = "Bust: " + _arrayData[position][16 + 1] + "   \n";
+            var r = "Waist: " + _arrayData[position][17 + 1] + "   \n";
+            var s = "Hips: " + _arrayData[position][18 + 1] + "  \n";
+            var t = "Overall length: " + _arrayData[position][19 + 1] + "  \n";
+            var u = "Garment width: " + _arrayData[position][20 + 1] + "   \n";
+            var v = "Pants bottom width: " + _arrayData[position][21 + 1] + "   \n";
+            var w = "Waist to crotch: " + _arrayData[position][22 + 1] + "   \n";
+            var x = "Crotch to bottom: " + _arrayData[position][23 + 1] + "   \n";
+            var y = "\nSIZE generic:" + _arrayData[position][24 + 1] + " \n";
+            var z = "SIZE US:" + _arrayData[position][25 + 1] + " \n";
+            var polo ='\n' + sku + '\n\nFREE U.S. DOMESTIC SHIPPING \n \nPOLICIES \n\nSince vintage clothing is pre-worn and "used" keep in mind that they may have flaws and damages, that we may not have seen. When purchasing a used vintage apparel item it is normal to expect some natural wear of the item, due to the age of the garment and it is previous use. \n\n We strive to provide you vintage in the best condition possible. Please refer to our VINTAGE CONDITION CHART before purchasing your order. If you have any specific questions about a vintage item, contact info [!at] prdxnyc.com and we will be happy to give you a more detailed description.' +
+
+            '\n\nVINTAGE CONDITION CHART \n' +
+            'Perfect: No visible signs of wear, no flaws, brand new look \n' +
+            'Nearly Perfect: Like new, no visible flaws \n' +
+            'Very good: Has been worn, minor flaws, possibly repaired \n' +
+            'Good: Some flaws, wearable and repairable \n' +
+            'Fair: Numerous flaws, needs a repair, wearable \n' +
+            'Poor: Damaged, possibly wearable, used for design or study \n' +
+
+
+            '\n\nMEASUREMENTS \n' +
+            'All measurements are take while the garment is laying flat. Please keep in mind there might be a discrepancy of 1-2 inches. \n' +
+
+
+            '\n\nPAYMENT \n' +
+            'We accept Paypal only. It is the most secure for the buyer and seller. \n' +
+
+            '\n\nSHIPPING \n' +
+            'All of our items are shipped UPS or parcel post (through the Unites States Post Office), unless a request stating otherwise was made. UPS will have a tracking number USPS will not. \n' +
+
+            '\nPurchased items are shipped on Monday and Friday. \n' +
+
+            '\nFor domestic purchases (all purchases made within the United States), please allow 5-7 business days. \n' +
+
+            '\nThe estimated time of package arrival should be made from the shipment date and not the purchase date of the piece. \n' +
+
+            '\nREFUNDS AND EXCHANGES \n' +
+            'All sales are final. \n' +
+
+            '\nInquiries about exchanges for store credit are handled on a case by case basis. \n' +
+
+            '\nTo ensure your item will fit please double-check and compare the listing measurements and your own measurements. \n' +
+
+            '\nWe will not issue a store credit for garments that do not fit as all the measurements are provided in the listing. \n' +
+
+            '\nIf you are unsure and have a question about the size or appearance of an item, contact us and we will gladly take additional measurements and answer any detailed questions you may have. \n' +
+
+            '\nPlease notify us within two days of receiving your garment if you feel it has been GROSSLY misrepresented. If you do not notify us within two days we will not be able to issue you a store credit. \n' +
+
+            '\nDamage is considered something that requires repair, not something that will be remedied by washing, dry cleaning, or simple spot removal. \n' +
+
+            '\nPlease keep in mind that vintage items are used and should not be expected to be in never worn condition. \n' +
+
+            '\nNo warranty is expressed or implied regarding the usefulness or durability of any item. \n' +
+
+            '\nDue to the unique nature of vintage clothing, there might be minor imperfections. Although we do our best to note any major flaw that we find we may miss trivial ones or ones that are characteristic of garments of a particular age and era . \n' +
+
+            '\nAlthough ParaSail takes great care of our pieces, they have had a previous life. Again, vintage items are sold "as is". \n' +
+
+            '\nAll our items are in excellent vintage condition, most gently used, but please keep your expectations realistic.Things like pin sized holes, blemishes, standard signs of prior wear or age will not be noted in the product listing. \n' +
+
+            '\nIn the case of an approved return for shop credit shipment costs will be the buyers responsibility both ways. \n' +
+
+            '\nThe return shipment ( at the buyers expense) must be made via a method of shipping that includes a tracking number and signature upon receipt. \n' +
+
+            '\nIn addition, a restocking fee of 10% will be charged on all regular orders. \n' +
+
+            '\nThe garment will be expected to be in the exact same condition that it was in when it shipped out so if you have: modified it, altered it, stained it, tore it, separated the zipper because it was too small when you tried to zip it up, wore it (we can tell when things come back smelling of perfume, soap,laundry or smoke that they have been worn), the shop credit will not be issued, the garment will be sent back to you and you will be billed for the cost of the return shipment. \n' +
+
+            '\nADDITIONAL POLICIES AND FAQs \n' +
+            'Please pay careful attention to the way that the colors of the garment are described. Every computer screen is different and we can not be sure what the color of a particular garment looks like on your specific screen. \n ' +
+
+            '\n If you are not happy with your purchase or feel you have had a less than positive experience please contact us before you leave feedback so we have an opportunity to provide you with a fully positive transaction. \n ';
+            return (_arrayData[position][11 + 1] != "" ? l : "") + (_arrayData[position][13 + 1] != "" ? n : "") + mea + (_arrayData[position][15 + 1] != "" ? p : "") + (_arrayData[position][16 + 1] != "" ? q : "") + (_arrayData[position][17 + 1] != "" ? r : "") + (_arrayData[position][18 + 1] != "" ? s : "") + (_arrayData[position][19 + 1] != "" ? t : "") + (_arrayData[position][20 + 1] != "" ? u : "") + (_arrayData[position][21 + 1] != "" ? v : "") + (_arrayData[position][22 + 1] != "" ? w : "") + (_arrayData[position][23 + 1] != "" ? x : "") + (_arrayData[position][24 + 1] != "" ? y : "") + (_arrayData[position][25 + 1] != "" ? z : "") + polo;
         }
         function HandleSize(position, _arraySize) {
             var separators = ['\\\/', '-'];
@@ -295,22 +345,22 @@
             for (var i = sizeCloath.length - 1; i >= 0; i--) {
                 sizeCloath[i] = sizeCloath[i].toUpperCase()
                 if (sizeCloath[i] == "XS")
-                    sizetag.push("Size > Extra Small");
+                    sizetag.push("Extra Small");
                 else if (sizeCloath[i] == "S")
-                    sizetag.push("Size > Small");
+                    sizetag.push("Small");
                 else if (sizeCloath[i] == "M")
-                    sizetag.push("Size > Medium");
+                    sizetag.push("Medium");
                 else if (sizeCloath[i] == "L")
-                    sizetag.push("Size > Large");
+                    sizetag.push("Large");
                 else if (sizeCloath[i] == "XL")
-                    sizetag.push("Size > Extra Large");
+                    sizetag.push("Extra Large");
                 else if (sizeCloath[i] == "ONE SIZE") {
-                    sizetag.push("Size > Extra Small")
-                    sizetag.push("Size > Small");
-                    sizetag.push("Size > Medium");
-                    sizetag.push("Size > Large");
-                    sizetag.push("Size > Extra Large");
-                    sizetag.push("Size > One Size");
+                    sizetag.push("Extra Small")
+                    sizetag.push("Small");
+                    sizetag.push("Medium");
+                    sizetag.push("Large");
+                    sizetag.push("Extra Large");
+                    sizetag.push("One Size");
                 }
             }
             return sizetag;
@@ -336,7 +386,7 @@
             return title.replace(/\s\s+/g, ' ');
         }
         function SearchDesigner(title) {
-
+                
             length = designers.length;
             while (length--) {
 
@@ -385,7 +435,7 @@
                                 tags: {
 
                                 },
-                                type: { defaultValue: { typeId: "Cloaths", typeName: "Cloaths" } },
+                                type: { defaultValue: { category_id: "69195603", name: "dress" } },
                             }
                         }
                     },
@@ -416,12 +466,15 @@
                 }, {
                     field: "designer",
                     title: "designer"
-                }, { field: "type", title: "type", width: "180px", editor: categoryDropDownEditor, template: "#=type#" },
+                }, { field: "type", title: "type", width: "180px", editor: categoryDropDownEditor, template: "#=type!='undefined'?type.name:type#" },
                         { command: "destroy", title: "&nbsp;", width: 150 }], editable: true
             });
             return false;
         }
-
+        function toTitleCase(str)
+        {
+            return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+        }
         $("#export").click(function (e) {
             var grid = $("#grid").data("kendoGrid");
             var newData = grid.dataSource.data();
@@ -430,28 +483,32 @@
             for (var i = 0; i < newData.length ; i++) {
                 var intName = arrayName.indexOf(newData[i].name);
                 Things[i] = { handle: newData[i].title };
-                newData[i].title = newData[i].title.replace(" ", "-").toLowerCase();
+                newData[i].title =toTitleCase(newData[i].title) + " Size: "+ _arrayData[i][24 + 1] ;
 
-                Things[i].tags = newData[i].tags;
-                Things[i].product_type = newData[i].type;
-                Things[i].title = _arrayData[intName][9];
-                Things[i].body_html = newData[i].body;
-                Things[i].vendor = "Morphew";
-                Things[i].published = "false";
-                Things[i].variants = new Array();
-                Things[count].optname = "Title";
-                Things[count].optvalue = "Default Title";
-                var Variant = { price: _arrayData[intName][8], sku: newData[i].variantSKU, barcode: "*" + _arrayData[intName][3] + "*" }
-                Things[i].variants.push(Variant);
+                Things[i].tags = newData[i].tags.split(',');
+                Things[i].category_id  = newData[i].type.category_id;
+                Things[i].title = newData[i].title ;
+                Things[i].description = newData[i].title.replace(" ", "-").toLowerCase() + "\n \n" + newData[i].body;
+                Things[i].materials = _arrayData[i][12 + 1].split(' ');
+                Things[i].should_auto_renew = true;
+                Things[i].who_made = "someone_else";
+                Things[i].state = "draft";
+                Things[i].is_suply = false;
+                Things[i].shipping_template_id = 10452984190;
+                Things[i].quantity = 10452984190;
+
+                Things[i].when_made = _arrayData[i][11 + 1];
+                Things[i].price = _arrayData[i][8].substring(1, _arrayData[i][8].length - 1);
+
                 var Images = new Array();
                 for (var j = 0; j < newData[i].links.length; j++) {
 
-                    Images.push({ src: newData[i].links[j] });
+                    Images.push(newData[i].links[j]);
                 }
                 Things[i].images = Images;
             }
             $.ajax({
-                url: "/Products/pushpush",
+                url: "/Etsy/pushpush",
                 data: JSON.stringify({ products: Things }),
                 dataType: "json",
                 type: "POST",
@@ -467,16 +524,18 @@
 
         });
         var articles = [' a ', ' an ', ' and ', ' with ', " of "]
-        var dataTypes = ['BAG', 'BLOUSE', 'CAFTAN', 'CAPE', 'COAT', 'COLLAR', 'CORSET', 'DRESS', 'GIFT CARD', 'HEADWEAR', 'JACKET', 'JACKET and DRESS', 'JEWELRY', 'JUMPSUIT', 'KIMONO', 'LINGERIE', 'PANTS', 'PONCHO', 'SCARF', 'SET', 'SHAWL', 'SHIRT', 'SHOES', 'SKIRT', 'SOLD', 'SUIT', 'SUNGLASSES', 'SWEATER', 'SWIMSUIT', 'TOP', 'TUNIC', 'TWO PIECE', 'VEST', ]
+        var dataTypes =@Html.Raw(Json.Encode(ViewBag.categories)); // ['BAG', 'BLOUSE', 'CAFTAN', 'CAPE', 'COAT', 'COLLAR', 'CORSET', 'DRESS', 'GIFT CARD', 'HEADWEAR', 'JACKET', 'JACKET and DRESS', 'JEWELRY', 'JUMPSUIT', 'KIMONO', 'LINGERIE', 'PANTS', 'PONCHO', 'SCARF', 'SET', 'SHAWL', 'SHIRT', 'SHOES', 'SKIRT', 'SOLD', 'SUIT', 'SUNGLASSES', 'SWEATER', 'SWIMSUIT', 'TOP', 'TUNIC', 'TWO PIECE', 'VEST', ]
         var designers = ["Adele Simpson", "Albert Nipon", "Alexander Mcqueen", "Andre Laug", "Ann Demeulemeester", "Azzedine Alaia", "Ba-Tzu", "Balenciaga", "Bernard Perris", "Bill Blass", "Bob Bugnand", "Bob Mackie", "Byblos", "Byron Lars", "Calvin Klein", "Carven", "Chanel", "Chloe", "Christian Dior", "Christian Lacroix", "Claude Montana", "Comme Des Garcons", "Courreges", "Custo Barcelona", "Diane Freis", "Dolce & Gabbana", "Don Loper", "Donald Brooks", "Donna Karan", "Dorothy O’hara", "Downhill Racer", "Eleanor Frank Costumes", "Elizabeth Arden", "Elsa Schiaparelli", "Emanuel Ungaro", "Emmanuelle Khanh", "Ermanno Scervino", "Escada", "Eugene Alexander", "Fontana Couture", "France Andrevie", "Frank Usher", "Franklin Simon", "French Rags", "Geny (First Versace’s Job)", "Geoffrey Beene", "George Peter Stavropoulos", "Georgie Keyloun", "Gianfranco Ferre", "Gibo", "Gina Fratini", "Giorgio Sant’angelo", "Givenchy", "Gucci", "Guy Laroche", "Halston", "Helmut Lang", "Helmut Lang", "Henrik Vibskov", "Hermes", "Herve Leger", "Holly's Harp", "Issey Miyake", "J.P. O'connor", "Jack Bryan", "Jacklin Design", "James Galanos", "Jean Claude Jitrois", "Jean Patou", "Jean Paul Gaultier", "Jo Copeland", "John Galliano", "Jomer Imports Ltd", "Junko Koshino", "Junya Watanabe", "Kansai Yamamoto", "Karl Lagerfeld", "Kenzo", "Kevan Hall Couture", "Koji Nihonmatsu", "Krizia", "Lanson", "Lanvin", "Larry Aldrich", "Lemaitre", "Leonard", "Loranchet", "Loris Azzaro", "Louis Feraud", "Maggy Rouff", "Maison Martin Margiela", "Malcolm Starr", "Marisa Martin Knightsbridge", "Marithe + Francois Girbaud", "Martine Sitbon", "Mary Brockhoff", "Mary Mcfadden", "Matsuda", "Meshach Taylor", "Missoni", "Michaele Vollbracht", "Miu Miu", "Moschino", "Mr. Blackwell Design", "Naeem Khan", "Nina Ricci", "Norma Kamali", "Oleg Cassini", "Oscar De La Renta", "Paco Rabanne", "Parasuco", "Pat Sandler", "Patrick Kelly", "Paul Whitney", "Peter Kappler", "Pierre Balmain", "Pierre Cardin", "Plein Sud", "Prada", "Richilene", "Rifat Ozbek", "Roberto Cavalli", "Romeo Gigli", "Rundholz", "Saga Fox", "Sonia Rykiel", "Sophie Finzi", "Sophie Sitbon", , "Stavropoulos", "Stephen Burrows", "Ted Lapidus", "Thierry Mugler", "Tina Leser", "Trina Lewis & Marjon", "Valentino", "Versace", "Vicky Tiel", "Victor Costa I. Magnin", "Vivienne Westwood", "William Dust", "William Travilla", "Y’s", "Yohji Yamamoto", "Yves Saint Laurent", "Zandra Rhodes Hand"];
         function categoryDropDownEditor(container, options) {
             $('<input required name="' + options.field + '"/>')
                 .appendTo(container)
                 .kendoDropDownList({
-                    autoBind: true,
+                   
                     dataSource: {
                         data: dataTypes
-                    }
+                    },
+                    dataTextField: "name", suggest: true,
+                    dataValueField: "name",
                 });
         }
         $(document).ajaxStart(function () {
@@ -529,5 +588,70 @@
                 });
             });
         }
-   
-</script>
+
+
+
+        $(document).ready(function () {
+            //Dropdownlist Selectedchange event
+            $("#mainCat").change(function () {
+                $("#midCat").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCategoriesList")', // we are calling json method
+
+
+
+                    data: { tag: $("#mainCat").val() },
+                    // here we are get value of selected country and passing same value
+
+
+                    success: function (states) {
+                        // states contains the JSON formatted list
+                        // of states passed from the controller
+
+                        $.each(states, function (i, state) {
+                            $("#midCat").append('<option value="' + state.name + '">' +
+                             state.name + '</option>');
+                            // here we are adding option for States
+
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            })
+            $("#midCat").change(function () {
+                $("#lastCat").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCategoriesList")', // we are calling json method
+
+
+
+                    data: { tag: $("#mainCat").val() + "/" + $("#midCat").val() },
+                    // here we are get value of selected country and passing same value
+
+
+                    success: function (states) {
+                        // states contains the JSON formatted list
+                        // of states passed from the controller
+
+                        $.each(states, function (i, state) {
+                            $("#lastCat").append('<option value="' + state.category_id + '">' +
+                             state.name + '</option>');
+                            // here we are adding option for States
+
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
+} 
+ 
